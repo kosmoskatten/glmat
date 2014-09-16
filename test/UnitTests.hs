@@ -1,5 +1,7 @@
 module UnitTests (suite) where
 
+import Graphics.Math.GLMatrix (Matrix4 (..), identity4)
+
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
 import Test.HUnit
@@ -11,4 +13,9 @@ suite = [ testGroup "Matrix4 tests"
         ]
 
 identityMatrix4x4Test :: Assertion
-identityMatrix4x4Test = assertBool "Should be true" False
+identityMatrix4x4Test = 
+    assertEqual "Should be equal" (Matrix4 1 0 0 0
+                                           0 1 0 0
+                                           0 0 1 0
+                                           0 0 0 1)
+                                  (identity4 :: Matrix4 Int)
