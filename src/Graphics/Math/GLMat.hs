@@ -9,6 +9,7 @@ import Graphics.Math.GLMatrix
   , identity
   , translate
   , scale
+  , ortho
   , perspective
   , lookAt
   , transpose

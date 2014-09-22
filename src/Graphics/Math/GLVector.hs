@@ -6,9 +6,14 @@ module Graphics.Math.GLVector
        , sub
        ) where
 
+import Text.Printf
+
 -- | A three dimensional vector.
 data GLVector a = GLVector !a !a !a
-  deriving (Eq, Show)
+  deriving Eq
+
+instance PrintfArg a => Show (GLVector a) where
+  show (GLVector x y z) = printf "[ %v %v %v ]\n" x y z
 
 magnitude :: Floating a => GLVector a -> a
 magnitude (GLVector x y z) = sqrt $ (x * x) + (y * y) + (z * z)

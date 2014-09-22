@@ -9,7 +9,7 @@ import Graphics.Rendering.OpenGL
   , GLfloat
   )
 import Graphics.Rendering.OpenGL.Raw
-  ( gl_FALSE
+  ( gl_TRUE
   , glUniformMatrix4fv
   )
 
@@ -23,4 +23,4 @@ uniformMatrixF (UniformLocation loc)
             , m21, m22, m23, m24
             , m31, m32, m33, m34
             , m41, m42, m43, m44 ]
-  withArray mat $ glUniformMatrix4fv loc 1 (fromIntegral gl_FALSE)
+  withArray mat $ glUniformMatrix4fv loc 1 (fromIntegral gl_TRUE)

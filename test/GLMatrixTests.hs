@@ -35,10 +35,10 @@ identityMatrixTest =
 
 translateTest :: Assertion
 translateTest =
-  assertEqual "Should be equal" (GLMatrix 1 0 0 0
-                                          0 1 0 0
-                                          0 0 1 0
-                                          1 2 3 1)
+  assertEqual "Should be equal" (GLMatrix 1 0 0 1
+                                          0 1 0 2
+                                          0 0 1 3
+                                          0 0 0 1)
                                 (translate 1 2 3 :: GLMatrix Int)
 
 scaleTest :: Assertion
@@ -61,8 +61,8 @@ perspectiveTest = do
   assertEqual "Should be equal"
               (GLMatrix ((cot (fovy' / 2)) / aspect) 0 0 0
                         0 (cot (fovy' / 2)) 0 0
-                        0 0 ((zFar + zNear) / (zNear - zFar)) ((2 * zFar * zNear) / (zNear - zFar))
-                        0 0 (-1) 0)
+                        0 0 ((zFar + zNear) / (zNear - zFar)) (-1)
+                        0 0 ((2 * zFar * zNear) / (zNear - zFar)) 0)
               (transpose $ perspective fovy aspect zNear zFar)
 
 transposeTest :: Assertion

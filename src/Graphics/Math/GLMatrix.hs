@@ -3,6 +3,7 @@ module Graphics.Math.GLMatrix
     , identity
     , translate
     , scale
+    , ortho
     , perspective
     , lookAt
     , transpose
@@ -10,14 +11,30 @@ module Graphics.Math.GLMatrix
     ) where
 
 import Graphics.Math.GLVector (GLVector (..), normalize, cross, sub)
+import Text.Printf
 
 -- | A four by four matrix adapted for use with OpenGL. Implemented to
--- work in row major order.
+-- work in column major order. It has to be converted to row major
+-- order before delivered to the OpenGL pipeline though.
 data GLMatrix a = GLMatrix !a !a !a !a
                            !a !a !a !a
                            !a !a !a !a
                            !a !a !a !a
-  deriving (Eq, Show)
+  deriving Eq
+
+instance PrintfArg a => Show (GLMatrix a) where
+  show (GLMatrix m11 m12 m13 m14
+                 m21 m22 m23 m24
+                 m31 m32 m33 m34
+                 m41 m42 m43 m44) =
+    let matrix = "[ %v %v %v %v ]\n\
+                 \[ %v %v %v %v ]\n\
+                 \[ %v %v %v %v ]\n\
+                 \[ %v %v %v %v ]\n"
+    in printf matrix m11 m12 m13 m14
+                     m21 m22 m23 m24
+                     m31 m32 m33 m34
+                     m41 m42 m43 m44
 
 -- | Construct the identity matrix.
 identity :: Num a => GLMatrix a
@@ -28,10 +45,10 @@ identity = GLMatrix 1 0 0 0
 
 -- | Construct a translation matrix.
 translate :: Num a => a -> a -> a -> GLMatrix a
-translate x y z = GLMatrix 1 0 0 0
-                           0 1 0 0
-                           0 0 1 0
-                           x y z 1
+translate x y z = GLMatrix 1 0 0 x
+                           0 1 0 y
+                           0 0 1 z
+                           0 0 0 1
 
 -- | Construct a scale matrix.
 scale :: Num a => a -> a -> a -> GLMatrix a
@@ -39,6 +56,33 @@ scale x y z = GLMatrix x 0 0 0
                        0 y 0 0
                        0 0 z 0
                        0 0 0 1
+
+-- | Construct an orthographic matrix.
+ortho :: Floating a => a -> a -> a -> a -> a -> a -> GLMatrix a
+ortho left right bottom top near far =
+  let m11 = 2 / (right - left)
+      m12 = 0
+      m13 = 0
+      m14 = -(right + left) / (right - left)
+
+      m21 = 0
+      m22 = 2 / (top - bottom)
+      m23 = 0
+      m24 = -(top + bottom) / (top - bottom)
+
+      m31 = 0
+      m32 = 0
+      m33 = (-2) / (far - near)
+      m34 = -(far + near) / (far - near)
+
+      m41 = 0
+      m42 = 0
+      m43 = 0
+      m44 = 1
+  in GLMatrix m11 m12 m13 m14
+              m21 m22 m23 m24
+              m31 m32 m33 m34
+              m41 m42 m43 m44
 
 -- | Construct the perspective matrix.
 perspective :: Floating a => a -> a -> a -> a -> GLMatrix a
@@ -59,11 +103,11 @@ perspective fovy aspect zNear zFar =
       m31   = 0
       m32   = 0
       m33   = (zFar + zNear) / (zNear - zFar)
-      m34   = (-1)
+      m34   = (2 * zFar * zNear) / (zNear - zFar)
 
       m41   = 0
       m42   = 0
-      m43   = (2 * zFar * zNear) / (zNear - zFar)
+      m43   = (-1)
       m44   = 0
   in GLMatrix m11 m12 m13 m14
               m21 m22 m23 m24
@@ -77,11 +121,11 @@ lookAt eye@(GLVector eyex eyey eyez) center up =
       side@(GLVector sx sy sz)    = normalize $ forward `cross` up
       GLVector ux uy uz           = side `cross` forward
       matrix                      =
-        GLMatrix sx ux (-fx) 0
-                 sy uy (-fy) 0
-                 sz uz (-fz) 0
-                 0  0  0     1
-  in translate (-eyex) (-eyey) (-eyez) >*< matrix
+        GLMatrix   sx    sy    sz  0
+                   ux    uy    uz  0
+                 (-fx) (-fy) (-fz) 0
+                    0     0      0 1
+  in matrix >*< translate (-eyex) (-eyey) (-eyez)
 
 -- | Transpose a matrix.
 transpose :: GLMatrix a -> GLMatrix a
@@ -132,5 +176,5 @@ degToRad :: Floating a => a -> a
 degToRad theta = theta * (pi / 180)
 
 cot :: Floating a => a -> a
-cot theta = 1 / (tan theta)
+cot theta = 1 / tan theta
 
