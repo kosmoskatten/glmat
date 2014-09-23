@@ -16,10 +16,10 @@ library
   exposed-modules:     Graphics.Math.GLMat
   other-modules:       Graphics.Math.GLMatrix
                        , Graphics.Math.GLVector
---                       , Graphics.Math.GLUniformMatrix
+                       , Graphics.Math.GLUniformMatrix
   build-depends:       base >=4.7 && <4.8
-  --                     , OpenGL >= 2.9
-  --                     , OpenGLRaw >= 1.5
+                       , OpenGL >= 2.9
+                       , OpenGLRaw >= 1.5
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall -funbox-strict-fields
@@ -32,8 +32,8 @@ test-suite glmat-tests
                       , GLMatrixTests
                       , GLMatrixProps
   build-depends:      base >=4.7 && <4.8
---                      , OpenGL >= 2.9
---                      , OpenGLRaw >= 1.5
+                      , OpenGL >= 2.9
+                      , OpenGLRaw >= 1.5
                       , test-framework >= 0.8
                       , test-framework-hunit >= 0.3
                       , test-framework-quickcheck2 >= 0.3
